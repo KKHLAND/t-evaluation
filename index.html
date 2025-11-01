@@ -36,11 +36,11 @@
                 padding: 0 !important;
             }
             
-            /* 상하 여백 20mm */
+            /* 상하 여백 20mm -> 15mm로 조정 */
             @page { 
                 size: A4 portrait;
-                margin-top: 20mm;
-                margin-bottom: 20mm;
+                margin-top: 15mm;
+                margin-bottom: 15mm;
                 margin-left: 10mm;
                 margin-right: 10mm;
             }
@@ -55,6 +55,23 @@
             .eval-meta-info {
                 margin-bottom: 15px !important; 
             }
+            
+            /* PDF 인쇄 시 소계/합계 배경색 강제 적용 */
+            .subtotal-row td {
+                background-color: #f0f0f0 !important; 
+                -webkit-print-color-adjust: exact; 
+                color-adjust: exact;
+            }
+            .total-row td {
+                background-color: #e8f4f8 !important; 
+                -webkit-print-color-adjust: exact; 
+                color-adjust: exact;
+            }
+            
+            /* 인쇄 시도 화면과 동일하게 25px 유지 */
+            .remarks-section {
+                margin-top: 25px !important;
+            }
         }
         
         .eval-table {
@@ -64,12 +81,13 @@
             margin: 0 2mm;
         }
         
-        /* --- [수정됨 2] --- 좌우 padding 4px -> 6px */
+        /* [수정됨]: 좌우 padding 4px -> 6px 유지, 상하 padding 3px -> 4px로 증가 (셀 높이 증가) */
+        /* [수정됨]: line-height 1.3 -> 1.4로 증가 (줄 간격 증가) */
         .eval-table th, .eval-table td {
             border: 1px solid #000;
-            padding: 3px 6px;
+            padding: 4px 6px; 
             vertical-align: top;
-            line-height: 1.3;
+            line-height: 1.4; 
         }
         
         /* --- [수정됨 2] --- 좌우 padding 4px -> 6px */
@@ -116,7 +134,8 @@
             line-height: 1.25;
         }
         
-        .inner-table {
+        /* inner-table 관련 CSS는 이제 사용하지 않습니다. */
+        /* .inner-table {
             width: 100%;
             font-size: 7px;
             line-height: 1.2;
@@ -127,13 +146,12 @@
             border: 1px solid #000;
             padding: 1px 2px;
         }
-        /* inner-table의 th 스타일 추가 */
         .inner-table th {
             border: 1px solid #000;
             padding: 1px 2px;
             background-color: #f0f0f0;
             font-weight: bold;
-        }
+        } */
 
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -260,8 +278,9 @@
                                 <div>
                                     <h1 className="text-2xl font-bold text-indigo-700 mb-1">📊 교사 다면평가(정량평가)표 생성 시스템</h1>
                                 </div>
-                                <div className="text-right">
-                                    <p className="text-base text-gray-600">{schoolYear}학년도 {schoolName}</p>
+                                {/* [수정됨] 학교명 표시 부분에 파란색 배경 및 흰색 글씨 적용 */}
+                                <div className="text-right bg-blue-600 rounded-lg px-4 py-2 shadow-md">
+                                    <p className="text-base text-white font-bold">{schoolYear}학년도 {schoolName}</p>
                                 </div>
                             </div>
                         </div>
@@ -397,7 +416,7 @@
                                             onClick={() => window.print()}
                                             className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:from-green-600 hover:to-emerald-700 font-bold transition-all transform hover:scale-105 shadow-lg"
                                         >
-                                            🖨️ 인쇄 / PDF ({selectedTeachers.length}명)
+                                            🖨️ 인쇄 ({selectedTeachers.length}명)
                                         </button>
                                     </div>
                                 )}
@@ -446,7 +465,8 @@
 
             return (
                 <div className="bg-white p-4" style={{width: '100%', margin: '0 auto'}}>
-                    <div style={{border: '2px solid #000', padding: '8px'}}>
+                    {/* 외곽선 제거: border: '2px solid #000' 제거 */}
+                    <div style={{padding: '8px'}}> 
                         
                         {/* --- [수정됨 1] --- marginTop: '15px' -> '0px'로 변경 */}
                         <h1 style={{textAlign: 'center', fontSize: '20px', fontWeight: 'bold', marginBottom: '6px', marginTop: '0px'}}>
@@ -525,11 +545,12 @@
                                     <td style={{fontSize: '8px'}}>2. 다학년, 다교과 지도</td>
                                     <td style={{textAlign: 'center'}}>6</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td style={{width: '45%'}}>과목 수가 3개 이상</td><td style={{textAlign: 'center', width: '15%'}}>6점</td><td rowSpan="3" style={{width: '40%'}}>▪ 과목 수에 해당하지 않는 과목<br/>&nbsp;① 외부강사와 코티칭 과목<br/>&nbsp;② 창체 과목(진로, 창독, 창예 등)</td></tr>
-                                            <tr><td>과목 수 2개</td><td style={{textAlign: 'center'}}>4.5점</td></tr>
-                                            <tr><td>과목 수 1개</td><td style={{textAlign: 'center'}}>3점</td></tr>
-                                        </table>
+                                        <p>▪ 과목 수에 해당하지 않는 과목: ① 외부강사와 코티칭 과목, ② 창체 과목(진로, 창독, 창예 등)</p>
+                                        <ul style={{ listStyleType: 'none', paddingLeft: '0', margin: '2px 0 0 0'}}>
+                                            <li>- 과목 수가 3개 이상: 6점</li>
+                                            <li>- 과목 수 2개: 4.5점</li>
+                                            <li>- 과목 수 1개: 3점</li>
+                                        </ul>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7.5px'}}>교무</td>
                                     <td className="score-cell">{formatScore(teacher['2'])}</td>
@@ -538,9 +559,8 @@
                                     <td style={{fontSize: '8px'}}>3. 창체, 예체 교육활동 지도</td>
                                     <td style={{textAlign: 'center'}}>2</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td style={{width: '55%'}}>독서멘토링, 몽땅프로젝트, 지독한 독서클럽, 봉사단활동, 학교스포츠클럽(지도 팀당 점수 부여)</td><td style={{textAlign: 'center', width: '12%'}}>각 0.5점</td><td>▪ 최대 2점(강사료 지급이 안 되며 연간 운영되는 창의적 체험활동, 예체능 교육활동에 자발적으로 참여한 경우에 한함)</td></tr>
-                                        </table>
+                                        <p>▪ 최대 2점 (강사료 지급이 안 되며 연간 운영되는 창의적 체험활동, 예체능 교육활동에 자발적으로 참여한 경우에 한함)</p>
+                                        <p>▪ 독서멘토링, 몽땅프로젝트, 지독한 독서클럽, 봉사단활동, 학교스포츠클럽(지도 팀당 점수 부여): 각 0.5점</p>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7px'}}>창체,인문,문예체</td>
                                     <td className="score-cell">{formatScore(teacher['3'])}</td>
@@ -558,10 +578,10 @@
                                     <td style={{fontSize: '8px'}}>1. 상담지도</td>
                                     <td style={{textAlign: 'center'}}>15</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td style={{width: '45%'}}>담임, 학생생활부장</td><td style={{textAlign: 'center'}}>15점</td></tr>
-                                            <tr><td>비담임</td><td style={{textAlign: 'center'}}>14점</td></tr>
-                                        </table>
+                                        <ul style={{ listStyleType: 'none', paddingLeft: '0', margin: '0'}}>
+                                            <li>- 담임, 학생생활부장: 15점</li>
+                                            <li>- 비담임: 14점</li>
+                                        </ul>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7.5px'}}>교무</td>
                                     <td className="score-cell">{formatScore(teacher['5'])}</td>
@@ -570,10 +590,10 @@
                                     <td style={{fontSize: '8px'}}>2. 학생생활 및 행사 지도</td>
                                     <td style={{textAlign: 'center'}}>15</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td style={{width: '45%'}}>담임 및 부장교사</td><td style={{textAlign: 'center'}}>15점</td></tr>
-                                            <tr><td>비담임교사</td><td style={{textAlign: 'center'}}>14점</td></tr>
-                                        </table>
+                                        <ul style={{ listStyleType: 'none', paddingLeft: '0', margin: '0'}}>
+                                            <li>- 담임 및 부장교사: 15점</li>
+                                            <li>- 비담임교사: 14점</li>
+                                        </ul>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7.5px'}}>생활</td>
                                     <td className="score-cell">{formatScore(teacher['6'] || teacher['7'])}</td>
@@ -591,11 +611,11 @@
                                     <td style={{fontSize: '8px'}}>1. 직무연수 실적</td>
                                     <td style={{textAlign: 'center'}}>6</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td style={{width: '35%'}}>30시간 이상</td><td style={{textAlign: 'center'}}>6점</td></tr>
-                                            <tr><td>15시간~29시간</td><td style={{textAlign: 'center'}}>5점</td></tr>
-                                            <tr><td>14시간 이하</td><td style={{textAlign: 'center'}}>4점</td></tr>
-                                        </table>
+                                        <ul style={{ listStyleType: 'none', paddingLeft: '0', margin: '0'}}>
+                                            <li>- 30시간 이상: 6점</li>
+                                            <li>- 15시간~29시간: 5점</li>
+                                            <li>- 14시간 이하: 4점</li>
+                                        </ul>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7.5px'}}>연구</td>
                                     <td className="score-cell">{formatScore(teacher['9'])}</td>
@@ -604,12 +624,16 @@
                                     <td style={{fontSize: '8px'}}>2. 연구실적 및 교과장학</td>
                                     <td style={{textAlign: 'center'}}>4</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td style={{width: '45%'}}>교외공개 수업연구</td><td style={{textAlign: 'center'}}>1점</td></tr>
-                                            <tr><td>교원전문성신장 프로그램 (교원학습공동체 포함) 참여</td><td style={{textAlign: 'center'}}>2점</td></tr>
-                                            <tr><td>교내 공개 수업연구 (수업동영상 촬영 또는 수업공개)</td><td style={{textAlign: 'center'}}>1점</td></tr>
-                                        </table>
-                                        <div style={{marginTop: '1px'}}>▪수업동영상은 촬영 후 학교 공유 플랫폼에 탑재함<br/>▪본교 재직 중 교내 공개 수업연구를 실시한 해부터 매년 인정함<br/>※ 학교 적응기를 고려하여 부임 첫해에 한하여 수업 연구를 안 한 경우 0.5점 부여함</div>
+                                        <ul style={{ listStyleType: 'none', paddingLeft: '0', margin: '0'}}>
+                                            <li>- 교외공개 수업연구: 1점</li>
+                                            <li>- 교원전문성신장 프로그램 (교원학습공동체 포함) 참여: 2점</li>
+                                            <li>- 교내 공개 수업연구 (수업동영상 촬영 또는 수업공개): 1점</li>
+                                        </ul>
+                                        <div style={{marginTop: '1px'}}>
+                                            ▪ 수업동영상은 촬영 후 학교 공유 플랫폼에 탑재함<br/>
+                                            ▪ 본교 재직 중 교내 공개 수업연구를 실시한 해부터 매년 인정함<br/>
+                                            ※ 학교 적응기를 고려하여 부임 첫해에 한하여 수업 연구를 안 한 경우 0.5점 부여함
+                                        </div>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7.5px'}}>연구</td>
                                     <td className="score-cell">{formatScore(teacher['10'])}</td>
@@ -627,11 +651,11 @@
                                     <td style={{fontSize: '8px'}}>1. 학급 업무 및 학생 관리</td>
                                     <td style={{textAlign: 'center'}}>12</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td style={{width: '35%'}}>담임교사</td><td style={{textAlign: 'center'}}>12점</td></tr>
-                                            <tr><td>비담임 부장교사</td><td style={{textAlign: 'center'}}>10점</td></tr>
-                                            <tr><td>비담임 교사</td><td style={{textAlign: 'center'}}>8점</td></tr>
-                                        </table>
+                                        <ul style={{ listStyleType: 'none', paddingLeft: '0', margin: '0'}}>
+                                            <li>- 담임교사: 12점</li>
+                                            <li>- 비담임 부장교사: 10점</li>
+                                            <li>- 비담임 교사: 8점</li>
+                                        </ul>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7.5px'}}>교무</td>
                                     <td className="score-cell">{formatScore(teacher['12'])}</td>
@@ -640,12 +664,12 @@
                                     <td style={{fontSize: '8px'}}>2. 업무수행 및 곤란도</td>
                                     <td style={{textAlign: 'center'}}>15</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td style={{width: '35%'}}>부장교사</td><td style={{textAlign: 'center', width: '12%'}}>15점</td><td></td></tr>
-                                            <tr><td>기획교사(교무1, 연구, 학생생활)</td><td style={{textAlign: 'center'}}>13점</td><td>▪인사자문위원회규정에 명시된 기획</td></tr>
-                                            <tr><td>기획교사</td><td style={{textAlign: 'center'}}>12점</td><td>▪인사자문위원회규정에 명시된 기획 이외의 기획</td></tr>
-                                            <tr><td>부장, 기획을 제외한 교사</td><td style={{textAlign: 'center'}}>11점</td><td></td></tr>
-                                        </table>
+                                        <ul style={{ listStyleType: 'none', paddingLeft: '0', margin: '0'}}>
+                                            <li>- 부장교사: 15점</li>
+                                            <li>- 기획교사(교무1, 연구, 학생생활): 13점 (인사자문위원회규정에 명시된 기획)</li>
+                                            <li>- 기획교사: 12점 (인사자문위원회규정에 명시된 기획 이외의 기획)</li>
+                                            <li>- 부장, 기획을 제외한 교사: 11점</li>
+                                        </ul>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7.5px'}}>교무</td>
                                     <td className="score-cell">{formatScore(teacher['13'])}</td>
@@ -654,12 +678,12 @@
                                     <td style={{fontSize: '8px'}}>3. 학교공헌도</td>
                                     <td style={{textAlign: 'center'}}>3</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td style={{width: '45%'}}>연구시범학교 및 선도학교 관련 담당부장 및 담당교사 1인</td><td style={{textAlign: 'center', width: '12%'}}>1점</td><td>▪각 1점</td></tr>
-                                            <tr><td>기관표창 수상 담당부장 및 담당교사 1인</td><td style={{textAlign: 'center'}}>1점</td><td>▪각 1점</td></tr>
-                                            <tr><td>교과과장</td><td style={{textAlign: 'center'}}>각 1점</td><td>▪최대 2점 가점</td></tr>
-                                            <tr><td>학교운영위원회, 인사자문위원회, 다면평가위원회, 교육과정위원회, 생활교육위원회, 학교폭력전담기구, 학업성적관리위원회</td><td style={{textAlign: 'center'}}>각 0.5점</td><td>▪최대 2점 가점</td></tr>
-                                        </table>
+                                        <ul style={{ listStyleType: 'none', paddingLeft: '0', margin: '0'}}>
+                                            <li>- 연구시범학교 및 선도학교 관련 담당부장 및 담당교사 1인: 각 1점</li>
+                                            <li>- 기관표창 수상 담당부장 및 담당교사 1인: 각 1점</li>
+                                            <li>- 교과과장: 각 1점 (최대 2점 가점)</li>
+                                            <li>- 학교운영위원회, 인사자문위원회, 다면평가위원회, 교육과정위원회, 생활교육위원회, 학교폭력전담기구, 학업성적관리위원회: 각 0.5점 (최대 2점 가점)</li>
+                                        </ul>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7.5px'}}>교무</td>
                                     {/* 이 셀은 두 개의 CSV 값을 합산하므로 toFixed(1) 포맷팅을 유지합니다. */}
@@ -683,8 +707,8 @@
                             </tbody>
                         </table>
                         
-                        {/* '참고사항' 여백 및 줄간격 (변경 없음) */}
-                        <div style={{marginTop: '25px', fontSize: '6.8px', lineHeight: '1.5', paddingBottom: '5px'}}>
+                        {/* '참고사항' 여백 및 줄간격 (상단 여백 50px -> 25px로 감소, 왼쪽 패딩 유지) */}
+                        <div className="remarks-section" style={{marginTop: "25px", fontSize: '6.8px', lineHeight: '1.5', paddingBottom: '5px', paddingLeft: '2mm'}}>
                             <p style={{fontWeight: 'bold', marginBottom: '1px'}}>▣ 참고사항</p>
                             <p>1. 평가서 작성 흐름: 기초작업(관련부서) ⇨ 본인(기초작업 내용 확인 및 평가자 본인 항목 작성) ⇨ 학교장 ⇨ 최종작업(확인 및 합산)</p>
                             <p>2. 근거 자료 제출: 평가 대상자 본인이 산정하는 항목의 경우, 근거 자료를 명시하거나 첨부함</p>
@@ -711,7 +735,8 @@
 
             return (
                 <div className="bg-white p-4" style={{width: '100%', margin: '0 auto'}}>
-                    <div style={{border: '2px solid #000', padding: '8px'}}>
+                    {/* 외곽선 제거: border: '2px solid #000' 제거 */}
+                    <div style={{padding: '8px'}}> 
                         
                         {/* --- [수정됨 1] --- marginTop: '15px' -> '0px'로 변경 */}
                         <h1 style={{textAlign: 'center', fontSize: '20px', fontWeight: 'bold', marginBottom: '6px', marginTop: '0px'}}>
@@ -740,14 +765,14 @@
                                     <td style={{fontSize: '7px'}}>1. 학생 교육활동 및 지원활동 운영</td>
                                     <td style={{textAlign: 'center'}}>26</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <thead><tr><th style={{width: '15%'}}>구분</th><th style={{width: '35%'}}>세부항목</th><th style={{width: '12%'}}>점수</th><th>비고</th></tr></thead>
-                                            <tbody>
-                                                <tr><td rowSpan="3" style={{textAlign: 'center'}}>공통</td><td>단독수업 운영</td><td style={{textAlign: 'center'}}>26점</td><td rowSpan="3">▪단독수업은 정규수업을 배정받고 한 학기 이상 운영하는 경우에 한함(수업시간의 일부를 활용한 수업 제외)<br/>▪학생교육활동(성교육, 응급처치교육, 약물남용예방교육, 아동학대예방교육, 자살예방교육, 도서관이용교육 등)<br/>▪학생지원활동(각종검사 및 후속조치 시행, 프로그램 및 대회, 행사 운영 등)</td></tr>
-                                                <tr><td>교육활동 및 지원활동 운영</td><td style={{textAlign: 'center'}}>24점</td></tr>
-                                                <tr><td>특별실 운영</td><td style={{textAlign: 'center'}}>22점</td></tr>
-                                            </tbody>
-                                        </table>
+                                        <p style={{marginBottom: '1px'}}>▪ 단독수업은 정규수업을 배정받고 한 학기 이상 운영하는 경우에 한함(수업시간의 일부를 활용한 수업 제외)</p>
+                                        <p style={{marginBottom: '1px'}}>▪ 학생교육활동(성교육, 응급처치교육, 약물남용예방교육, 아동학대예방교육, 자살예방교육, 도서관이용교육 등)</p>
+                                        <p style={{marginBottom: '1px'}}>▪ 학생지원활동(각종검사 및 후속조치 시행, 프로그램 및 대회, 행사 운영 등)</p>
+                                        <ul style={{ listStyleType: 'none', paddingLeft: '0', margin: '2px 0 0 0'}}>
+                                            <li>- 단독수업 운영: 26점</li>
+                                            <li>- 교육활동 및 지원활동 운영: 24점</li>
+                                            <li>- 특별실 운영: 22점</li>
+                                        </ul>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7.5px'}}>생활,인문</td>
                                     <td className="score-cell">{formatScore(teacher['1'])}</td>
@@ -756,17 +781,24 @@
                                     <td style={{fontSize: '7px'}}>2. 교과별 특별 지원활동</td>
                                     <td style={{textAlign: 'center'}}>3</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td rowSpan="3" style={{width: '12%', textAlign: 'center', fontWeight: 'bold'}}>보건<br/>교사</td><td style={{width: '33%'}}>교내 법정감염병 발생 대응</td><td style={{width: '8%', textAlign: 'center'}}>1점</td><td>▪교내 법정감염병(유행성각결막염, 결핵 등) 또는 식중독 발생 시 대응 업무 (국가적 발생 감염병 제외)</td></tr>
-                                            <tr><td>응급환자 즉각 처치</td><td style={{textAlign: 'center'}}>1점</td><td>▪교육활동 중 긴급상황 발생 시 즉각 개입 후 응급처치 및 119구급대 지원요청 및 병원 후송</td></tr>
-                                            <tr><td>보건교육 실시</td><td style={{textAlign: 'center'}}>1점</td><td>▪교과수업시간의 보건교육(자료제공 포함) 및 정기적 보건소식지를 통한 보건교육 실시</td></tr>
-                                            <tr><td rowSpan="3" style={{textAlign: 'center', fontWeight: 'bold'}}>전문<br/>상담<br/>교사</td><td>자살 또는 자살시도 응급지원</td><td style={{textAlign: 'center'}}>1점</td><td>▪상황 발생으로 경찰, 병원 등 외부기관과 연계한 경우</td></tr>
-                                            <tr><td>아동학대 사안 총괄</td><td style={{textAlign: 'center'}}>1점</td><td>▪본교 교직원의 신고로 발생한 아동학대 사안 총괄 및 학생과 학부모 후속 지원</td></tr>
-                                            <tr><td>전문기관 협력 집단상담</td><td style={{textAlign: 'center'}}>1점</td><td>▪사유 발생으로 학급 또는 학년의 요청 시 전문기관의 협력을 받아 실시한 경우만 인정(상담교사 단독 집단상담 제외)</td></tr>
-                                            <tr><td rowSpan="3" style={{textAlign: 'center', fontWeight: 'bold'}}>사서<br/>교사</td><td>장서점검 및 폐기</td><td style={{textAlign: 'center'}}>1점</td><td>▪시행 완료 기준(계획안 작성만 있을 시 미인정)</td></tr>
-                                            <tr><td>도서관협력수업</td><td style={{textAlign: 'center'}}>1점</td><td>▪교과교사와 교육과정-수업-평가까지 협력한 수업만 인정(교과교사의 단독 도서관활용수업 제외)</td></tr>
-                                            <tr><td>독서동아리 등 운영</td><td style={{textAlign: 'center'}}>1점</td><td>▪학교교육계획 이외에 구성된 독서모임만 인정(창체동아리 제외)</td></tr>
-                                        </table>
+                                        <p style={{fontWeight: 'bold'}}>1) 보건교사</p>
+                                        <ul style={{ listStyleType: 'none', paddingLeft: '0', margin: '2px 0 0 10px'}}>
+                                            <li>- 교내 법정감염병 발생 대응: 1점 (교내 법정감염병 또는 식중독 발생 시 대응 업무. 국가적 발생 감염병 제외)</li>
+                                            <li>- 응급환자 즉각 처치: 1점 (교육활동 중 긴급상황 발생 시 즉각 개입 후 응급처치 및 119구급대 지원요청 및 병원 후송)</li>
+                                            <li>- 보건교육 실시: 1점 (교과수업시간의 보건교육 및 정기적 보건소식지를 통한 보건교육 실시)</li>
+                                        </ul>
+                                        <p style={{fontWeight: 'bold', marginTop: '3px'}}>2) 전문상담교사</p>
+                                        <ul style={{ listStyleType: 'none', paddingLeft: '0', margin: '2px 0 0 10px'}}>
+                                            <li>- 자살 또는 자살시도 응급지원: 1점 (상황 발생으로 경찰, 병원 등 외부기관과 연계한 경우)</li>
+                                            <li>- 아동학대 사안 총괄: 1점 (본교 교직원의 신고로 발생한 아동학대 사안 총괄 및 학생과 학부모 후속 지원)</li>
+                                            <li>- 전문기관 협력 집단상담: 1점 (전문기관 협력을 받아 실시한 경우만 인정)</li>
+                                        </ul>
+                                        <p style={{fontWeight: 'bold', marginTop: '3px'}}>3) 사서교사</p>
+                                        <ul style={{ listStyleType: 'none', paddingLeft: '0', margin: '2px 0 0 10px'}}>
+                                            <li>- 장서점검 및 폐기: 1점 (시행 완료 기준)</li>
+                                            <li>- 도서관협력수업: 1점 (교과교사와 교육과정-수업-평가까지 협력한 수업만 인정)</li>
+                                            <li>- 독서동아리 등 운영: 1점 (학교교육계획 이외에 구성된 독서모임만 인정)</li>
+                                        </ul>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7.5px'}}>생활,인문</td>
                                     <td className="score-cell">{formatScore(teacher['2'])}</td>
@@ -775,9 +807,8 @@
                                     <td style={{fontSize: '7px'}}>3. 창의적 체험활동 지도</td>
                                     <td style={{textAlign: 'center'}}>1</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td style={{width: '50%'}}>독서멘토링, 몽땅프로젝트, 지독한 독서클럽, 봉사단활동</td><td style={{textAlign: 'center', width: '12%'}}>각 0.5점</td><td>▪최대 1점(수당 지급이 안 되며 연간 운영되는 창의적 체험활동에 자발적으로 참여한 경우에 한함)</td></tr>
-                                        </table>
+                                        <p>▪ 최대 1점 (수당 지급이 안 되며 연간 운영되는 창의적 체험활동에 자발적으로 참여한 경우에 한함)</p>
+                                        <p>▪ 독서멘토링, 몽땅프로젝트, 지독한 독서클럽, 봉사단활동: 각 0.5점</p>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7px'}}>창체,인문</td>
                                     <td className="score-cell">{formatScore(teacher['3'])}</td>
@@ -795,9 +826,8 @@
                                     <td style={{fontSize: '8px'}}>1. 상담지도</td>
                                     <td style={{textAlign: 'center'}}>10</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td style={{width: '28%'}}>비교과교사</td><td style={{textAlign: 'center', width: '12%'}}>10점</td><td>▪비교과교사는 전교생을 대상으로 상시 상담지도 및 생활지도가 이루어지므로 부장 및 담임의 역할에 준하는 것으로 인정</td></tr>
-                                        </table>
+                                        <p>▪ 비교과교사는 전교생을 대상으로 상시 상담지도 및 생활지도가 이루어지므로 부장 및 담임의 역할에 준하는 것으로 인정합니다. </p>
+                                        <p style={{fontWeight: 'bold'}}>비교과교사: 10점</p>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7.5px'}}>생활</td>
                                     <td className="score-cell">{formatScore(teacher['5'])}</td>
@@ -806,9 +836,7 @@
                                     <td style={{fontSize: '8px'}}>2. 학생생활 및 행사 지도</td>
                                     <td style={{textAlign: 'center'}}>10</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td style={{width: '28%'}}>비교과교사</td><td style={{textAlign: 'center'}}>10점</td></tr>
-                                        </table>
+                                        <p style={{fontWeight: 'bold'}}>비교과교사: 10점</p>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7.5px'}}>생활</td>
                                     <td className="score-cell">{formatScore(teacher['6'])}</td>
@@ -817,9 +845,8 @@
                                     <td style={{fontSize: '8px'}}>3. 수업시간 외 학생지도</td>
                                     <td style={{textAlign: 'center'}}>10</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td style={{width: '28%'}}>참여교사</td><td style={{textAlign: 'center', width: '12%'}}>10점</td><td>▪참여한 교사에게 부여</td></tr>
-                                        </table>
+                                        <p>▪ 참여한 교사에게 부여합니다.</p>
+                                        <p style={{fontWeight: 'bold'}}>참여교사: 10점</p>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7.5px'}}></td>
                                     <td className="score-cell">{formatScore(teacher['7'])}</td>
@@ -837,11 +864,11 @@
                                     <td style={{fontSize: '8px'}}>1. 직무연수 실적</td>
                                     <td style={{textAlign: 'center'}}>6</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td style={{width: '35%'}}>30시간 이상</td><td style={{textAlign: 'center'}}>6점</td></tr>
-                                            <tr><td>15시간~29시간</td><td style={{textAlign: 'center'}}>5점</td></tr>
-                                            <tr><td>14시간 이하</td><td style={{textAlign: 'center'}}>4점</td></tr>
-                                        </table>
+                                        <ul style={{ listStyleType: 'none', paddingLeft: '0', margin: '0'}}>
+                                            <li>- 30시간 이상: 6점</li>
+                                            <li>- 15시간~29시간: 5점</li>
+                                            <li>- 14시간 이하: 4점</li>
+                                        </ul>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7.5px'}}>연구</td>
                                     <td className="score-cell">{formatScore(teacher['9'])}</td>
@@ -850,11 +877,11 @@
                                     <td style={{fontSize: '8px'}}>2. 연구실적 및 교과장학</td>
                                     <td style={{textAlign: 'center'}}>4</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td style={{width: '58%'}}>교외 연구활동(학교 간 교원공동체, 교과교육연구회 등) 참여</td><td style={{textAlign: 'center'}}>1점</td></tr>
-                                            <tr><td>교내 교원전문성신장 프로그램 (교원학습공동체 포함) 참여</td><td style={{textAlign: 'center'}}>2점</td></tr>
-                                            <tr><td>교육자료 탑재</td><td style={{textAlign: 'center', width: '12%'}}>1점</td><td>▪매년 담당 분야 교육자료 홈페이지 탑재</td></tr>
-                                        </table>
+                                        <ul style={{ listStyleType: 'none', paddingLeft: '0', margin: '0'}}>
+                                            <li>- 교외 연구활동(학교 간 교원공동체, 교과교육연구회 등) 참여: 1점</li>
+                                            <li>- 교내 교원전문성신장 프로그램 (교원학습공동체 포함) 참여: 2점</li>
+                                            <li>- 교육자료 탑재: 1점 (매년 담당 분야 교육자료 홈페이지 탑재)</li>
+                                        </ul>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7.5px'}}>연구</td>
                                     <td className="score-cell">{formatScore(teacher['10'])}</td>
@@ -872,12 +899,14 @@
                                     <td style={{fontSize: '8px'}}>1. 업무수행 및 곤란도</td>
                                     <td style={{textAlign: 'center'}}>27</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td rowSpan="3" style={{width: '12%', textAlign: 'center', fontWeight: 'bold'}}>곤란도<br/>가점</td><td style={{width: '28%'}}>곤란도A</td><td style={{textAlign: 'center', width: '10%'}}>3점</td><td rowSpan="3">▪당해연도 특수상황 발생 시 부여<br/>(보건, 전문상담, 사서교사 각 교과의 특수성을 고려하여 필요 시 가점을 부여함)</td></tr>
-                                            <tr><td>곤란도B</td><td style={{textAlign: 'center'}}>2점</td></tr>
-                                            <tr><td>곤란도C</td><td style={{textAlign: 'center'}}>1점</td></tr>
-                                            <tr><td colSpan="2">비교과교사</td><td style={{textAlign: 'center'}}>24점</td><td>▪비교과교사는 업무의 특성상 단독업무가 가능하므로 부장 및 기획의 역할에 준하는 것으로 인정</td></tr>
-                                        </table>
+                                        <p>▪ 비교과교사는 업무의 특성상 단독업무가 가능하므로 부장 및 기획의 역할에 준하는 것으로 인정합니다.</p>
+                                        <ul style={{ listStyleType: 'none', paddingLeft: '0', margin: '2px 0 0 0'}}>
+                                            <li style={{fontWeight: 'bold', marginBottom: '2px'}}>곤란도 가점 (당해연도 특수상황 발생 시 부여)</li>
+                                            <li>- 곤란도A: 3점</li>
+                                            <li>- 곤란도B: 2점</li>
+                                            <li>- 곤란도C: 1점</li>
+                                            <li style={{fontWeight: 'bold', marginTop: '3px'}}>비교과교사: 24점</li>
+                                        </ul>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '6.5px'}}>다면평가위원회<br/><br/>교무</td>
                                     {/* 이 셀은 두 개의 CSV 값을 합산하므로 toFixed(1) 포맷팅을 유지합니다. */}
@@ -887,11 +916,11 @@
                                     <td style={{fontSize: '8px'}}>2. 학교공헌도</td>
                                     <td style={{textAlign: 'center'}}>3</td>
                                     <td className="small-text">
-                                        <table className="inner-table">
-                                            <tr><td style={{width: '48%'}}>기관표창 수상 담당교사</td><td style={{textAlign: 'center'}}>1점</td><td></td></tr>
-                                            <tr><td>교과과장</td><td style={{textAlign: 'center'}}>1점</td><td></td></tr>
-                                            <tr><td>학교운영위원회, 인사자문위원회, 다면평가위원회, 교육과정위원회, 생활교육위원회, 학교폭력전담기구, 학교도서관운영위원회</td><td style={{textAlign: 'center', width: '12%'}}>각 0.5점</td><td>▪최대 1점 가점</td></tr>
-                                        </table>
+                                        <ul style={{ listStyleType: 'none', paddingLeft: '0', margin: '0'}}>
+                                            <li>- 기관표창 수상 담당교사: 1점</li>
+                                            <li>- 교과과장: 1점</li>
+                                            <li>- 학교운영위원회, 인사자문위원회, 다면평가위원회, 교육과정위원회, 생활교육위원회, 학교폭력전담기구, 학교도서관운영위원회: 각 0.5점 (최대 1점 가점)</li>
+                                        </ul>
                                     </td>
                                     <td style={{textAlign: 'center', fontSize: '7.5px'}}>교무</td>
                                     <td className="score-cell">{formatScore(teacher['14'])}</td>
@@ -914,8 +943,8 @@
                             </tbody>
                         </table>
                         
-                        {/* '참고사항' 여백 및 줄간격 (변경 없음) */}
-                        <div style={{marginTop: '25px', fontSize: '6.8px', lineHeight: '1.5', paddingBottom: '5px'}}>
+                        {/* '참고사항' 여백 및 줄간격 (상단 여백 50px -> 25px로 감소, 왼쪽 패딩 유지) */}
+                        <div className="remarks-section" style={{marginTop: '25px', fontSize: '6.8px', lineHeight: '1.5', paddingBottom: '5px', paddingLeft: '2mm'}}>
                             <p style={{fontWeight: 'bold', marginBottom: '1px'}}>▣ 참고사항</p>
                             <p style={{marginBottom: '1px'}}>※ 비교과교사의 정의: 보건교사, 전문상담교사, 사서교사(상기 기준은 비교과교사의 평가가 교과교사와 분리되어 교육청 단위로 평가될 경우에 한하여 적용됨)</p>
                             <p>1. 평가서 작성 흐름: 기초작업(관련부서) ⇨ 본인(기초작업 내용 확인 및 평가자 본인 항목 작성) ⇨ 학교장 ⇨ 최종작업(확인 및 합산)</p>
