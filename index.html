@@ -38,10 +38,7 @@
             
             @page { 
                 size: A4 portrait;
-                margin-top: 15mm;
-                margin-bottom: 15mm;
-                margin-left: 10mm;
-                margin-right: 10mm;
+                margin: 10mm; /* 여백 10mm 유지 */
             }
             
             .page-break {
@@ -51,7 +48,7 @@
             }
 
             .eval-meta-info {
-                margin-bottom: 15px !important; 
+                margin-bottom: 10px !important; 
             }
             
             .subtotal-row td {
@@ -66,28 +63,34 @@
             }
             
             .remarks-section {
-                margin-top: 25px !important;
+                margin-top: 10px !important;
             }
         }
         
         .eval-table {
             border-collapse: collapse;
-            width: calc(100% - 4mm);
+            width: 100%;
             font-size: 8.5px;
-            margin: 0 2mm;
+            margin: 0;
         }
         
+        /* 비교과 교사: 3px -> 2.5px로 미세 축소, 줄간격 1.35 -> 1.32 */
         .eval-table th, .eval-table td {
             border: 1px solid #000;
-            padding: 4px 6px; 
+            padding: 2.5px 5px; 
             vertical-align: top;
-            line-height: 1.4; 
+            line-height: 1.32; 
+        }
+
+        /* 교과 교사 전용 (유지): 4px, 1.4 */
+        .subject-table th, .subject-table td {
+            padding: 4px 6px !important;
+            line-height: 1.4 !important;
         }
         
         .eval-table th {
             background-color: #f0f0f0;
             font-weight: bold;
-            padding: 2px 6px;
         }
         
         .section-header {
@@ -99,21 +102,11 @@
         .subtotal-row {
             background-color: #f0f0f0;
             font-weight: bold;
-            padding: 2px 4px !important;
-        }
-        
-        .subtotal-row td {
-            padding: 2px 4px !important;
         }
         
         .total-row {
             background-color: #e8f4f8;
             font-weight: bold;
-            padding: 2px 4px !important;
-        }
-        
-        .total-row td {
-            padding: 2px 4px !important;
         }
         
         .score-cell {
@@ -124,7 +117,7 @@
         
         .small-text {
             font-size: 7.5px;
-            line-height: 1.25;
+            line-height: 1.3; /* 텍스트 줄간격도 약간 조정 */
         }
 
         .gradient-bg {
@@ -169,7 +162,6 @@
     <script type="text/babel">
         const { useState } = React;
 
-        // 점수를 소수점 1자리로 포맷하는 헬퍼 함수
         const formatScore = (score) => {
             if (score === null || score === undefined || score === "") {
                 return '0';
@@ -419,24 +411,25 @@
         }
 
         // -----------------------------------------------------------------
-        // SubjectTeacherEval 컴포넌트 (교과 교사) - PDF와 동일하게 수정
+        // SubjectTeacherEval 컴포넌트 (교과 교사)
         // -----------------------------------------------------------------
         function SubjectTeacherEval({ teacher, schoolName, schoolYear }) {
             const endYear = parseInt(schoolYear) ? parseInt(schoolYear) + 1 : '';
 
             return (
                 <div className="bg-white p-4" style={{width: '100%', margin: '0 auto'}}>
-                    <div style={{padding: '8px'}}> 
+                    <div style={{padding: '4px'}}> 
                         
-                        <h1 style={{textAlign: 'center', fontSize: '20px', fontWeight: 'bold', marginBottom: '6px', marginTop: '0px'}}>
+                        <h1 style={{textAlign: 'center', fontSize: '20px', fontWeight: 'bold', marginBottom: '4px', marginTop: '0px'}}>
                             {schoolYear}학년도 {schoolName.replace('등학교', '')} 다면평가(정량평가)표(교과교사)
                         </h1>
                         
-                        <div className="eval-meta-info" style={{fontSize: '13px', marginBottom: '20px', textAlign: 'center'}}>
+                        <div className="eval-meta-info" style={{fontSize: '13px', marginBottom: '10px', textAlign: 'center'}}>
                             <p>(평가 대상기간 : {schoolYear}.3.1. ~ {endYear}.2.28.) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (<span style={{borderBottom: '1px solid #000', display: 'inline-block', minWidth: '80px', textAlign: 'center'}}>{teacher['부서']}</span>)부 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 교사 성명 (<span style={{borderBottom: '1px solid #000', display: 'inline-block', minWidth: '60px', textAlign: 'center'}}>{teacher['이름']}</span>)(서명 혹은 날인)</p>
                         </div>
 
-                        <table className="eval-table">
+                        {/* 교과 교사 전용 클래스 subject-table */}
+                        <table className="eval-table subject-table">
                             <thead>
                                 <tr>
                                     <th style={{width: '45px'}}>분야</th>
@@ -677,7 +670,7 @@
                         </table>
                         
                         {/* 참고사항 */}
-                        <div className="remarks-section" style={{marginTop: "25px", fontSize: '6.8px', lineHeight: '1.5', paddingBottom: '5px', paddingLeft: '2mm'}}>
+                        <div className="remarks-section" style={{marginTop: "10px", fontSize: '6.8px', lineHeight: '1.5', paddingBottom: '5px', paddingLeft: '2mm'}}>
                             <p style={{fontWeight: 'bold', marginBottom: '1px'}}>▣ 참고사항</p>
                             <p>1. 평가서 작성 흐름: 기초작업(관련부서) ⇨ 본인(기초작업 내용 확인 및 평가자 본인 항목 작성) ⇨ 학교장 ⇨ 최종작업(확인 및 합산)</p>
                             <p>2. 근거 자료 제출: 평가 대상자 본인이 산정하는 항목의 경우, 근거 자료를 명시하거나 첨부함</p>
@@ -697,23 +690,24 @@
         }
         
         // -----------------------------------------------------------------
-        // NonSubjectTeacherEval 컴포넌트 (비교과 교사) - PDF와 동일하게 수정
+        // NonSubjectTeacherEval 컴포넌트 (비교과 교사)
         // -----------------------------------------------------------------
         function NonSubjectTeacherEval({ teacher, schoolName, schoolYear }) {
             const endYear = parseInt(schoolYear) ? parseInt(schoolYear) + 1 : '';
 
             return (
                 <div className="bg-white p-4" style={{width: '100%', margin: '0 auto'}}>
-                    <div style={{padding: '8px'}}> 
+                    <div style={{padding: '4px'}}> 
                         
-                        <h1 style={{textAlign: 'center', fontSize: '20px', fontWeight: 'bold', marginBottom: '6px', marginTop: '0px'}}>
+                        <h1 style={{textAlign: 'center', fontSize: '20px', fontWeight: 'bold', marginBottom: '4px', marginTop: '0px'}}>
                             {schoolYear}학년도 {schoolName.replace('등학교', '')} 다면평가(정량평가)표(비교과교사)
                         </h1>
                         
-                        <div className="eval-meta-info" style={{fontSize: '13px', marginBottom: '20px', textAlign: 'center'}}>
+                        <div className="eval-meta-info" style={{fontSize: '13px', marginBottom: '10px', textAlign: 'center'}}>
                             <p>(평가 대상기간 : {schoolYear}.3.1. ~ {endYear}.2.28.) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (<span style={{borderBottom: '1px solid #000', display: 'inline-block', minWidth: '80px', textAlign: 'center'}}>{teacher['부서']}</span>)부 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 교사 성명 (<span style={{borderBottom: '1px solid #000', display: 'inline-block', minWidth: '60px', textAlign: 'center'}}>{teacher['이름']}</span>)(서명 혹은 날인)</p>
                         </div>
 
+                        {/* 기본 eval-table 사용 */}
                         <table className="eval-table">
                             <thead>
                                 <tr>
@@ -920,7 +914,7 @@
 
                                 {/* Ⅳ. 담당업무 */}
                                 <tr>
-                                    <td rowSpan="3" className="section-header" style={{fontSize: '8.5px'}}>Ⅳ.<br/>담당<br/>업무</td>
+                                    <td rowSpan="3" className="section-header" style={{fontSize: '8.5px'}}>Ⅲ.<br/>담당<br/>업무</td>
                                     <td style={{fontSize: '8px'}}>1. 업무수행 및 곤란도</td>
                                     <td style={{textAlign: 'center'}}>27</td>
                                     <td className="small-text">
@@ -981,7 +975,7 @@
                         </table>
                         
                         {/* 참고사항 */}
-                        <div className="remarks-section" style={{marginTop: '25px', fontSize: '6.8px', lineHeight: '1.5', paddingBottom: '5px', paddingLeft: '2mm'}}>
+                        <div className="remarks-section" style={{marginTop: '10px', fontSize: '6.8px', lineHeight: '1.5', paddingBottom: '5px', paddingLeft: '2mm'}}>
                             <p style={{fontWeight: 'bold', marginBottom: '1px'}}>▣ 참고사항</p>
                             <p style={{marginBottom: '1px'}}>※ 비교과교사의 정의: 보건교사, 전문상담교사, 사서교사(상기 기준은 비교과교사의 평가가 교과교사와 분리되어 교육청 단위로 평가될 경우에 한하여 적용됨)</p>
                             <p>1. 평가서 작성 흐름: 기초작업(관련부서) ⇨ 본인(기초작업 내용 확인 및 평가자 본인 항목 작성) ⇨ 학교장 ⇨ 최종작업(확인 및 합산)</p>
